@@ -1,15 +1,15 @@
 body {
     background-color: #121212; /* Preto escuro */
-    color: #fff; /* Branco para contraste */
+    color: #000000; /* Branco para contraste */
   }
   
   h1 {
-    color: #800080; /* Roxo escuro */
+    color: #000000; /* Roxo escuro */
   }
   
   button {
-    background-color: #333; /* Cinza escuro */
-    color: #fff;
+    background-color: #444444; /* Cinza escuro */
+    color: #d4d4d4;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -19,8 +19,8 @@ body {
   .edit, .delete, .confirm{
     /* Estilos básicos dos botões */
     padding: 10px 20px;
-    background-color: #170c31; /* Verde */
-    color: white;
+    background-color: #308632; /* Verde */
+    color: rgb(255, 255, 255);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -31,13 +31,124 @@ body {
     transform: scale(1.1); /* Aumenta o tamanho em 10% */
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra */
   }
+  /* Estilo para a bolinha de prioridade */
+.priority-bubble {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 10px;
+}
+
+.priority-high {
+  background-color: red;
+}
+
+.priority-medium {
+  background-color: yellow;
+}
+
+.priority-low {
+  background-color: green;
+}
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+  #task-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      box-sizing: border-box;
+  }
+
+  #task-form input,
+  #task-form select,
+  #task-form button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+  }
+
+  #task-form button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+  }
+
+  #task-form button:hover {
+      background-color: #45a049;
+  }
+
+  #priority {
+      background-color: #f9f9f9;
+  }
+
+  #confirmacao {
+      display: none;
+      background-color: #ffeb3b;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  #confirmacao p {
+      margin: 0;
+      padding-bottom: 10px;
+      font-size: 16px;
+  }
+
+  #confirmacao button {
+      background-color: #b8e95f;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin: 5px;
+      cursor: pointer;
+  }
+
+  #confirmacao button:hover {
+      background-color: #e53935;
+  }
+
+  #sim {
+      background-color: #4CAF50;
+  }
+
+  #sim:hover {
+      background-color: #45a049;
+  }
+
+  #nao {
+      background-color: #9e9e9e;
+  }
+
+  #nao:hover {
+      background-color: #757575;
+  }
 
   #confirmacao {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #4f287c;
+    background-color: #d6f1c9;
     padding: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);

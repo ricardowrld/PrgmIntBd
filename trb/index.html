@@ -44,11 +44,11 @@
 </html>
 
 <script>
-  const confirmacao = document.getElementById('confirmacao');
-  const botaoSim = document.getElementById('sim');
-  const botaoNao = document.getElementById('nao');
+const confirmacao = document.getElementById('confirmacao');
+const botaoSim = document.getElementById('sim');
+const botaoNao = document.getElementById('nao');
 
-  const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDrmYSg7TDP3KstU_uI_OgHM80EC-2PEDU",
   authDomain: "todolistbd-a241a.firebaseapp.com",
   databaseURL: "https://todolistbd-a241a-default-rtdb.firebaseio.com",
@@ -58,95 +58,109 @@
   appId: "1:164730767493:web:aabd732a3d7d6cd5e701ec",
   measurementId: "G-6VM0EP62RC"
 };
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-  const tasksRef = database.ref('tasks');
 
-  document.getElementById("task-form").addEventListener("submit", function(event) {
-    event.preventDefault();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const tasksRef = database.ref('tasks');
 
-    const nome = document.getElementById("task-name").value;
-    const prioridade = document.getElementById("priority").value;
-    const newTask = {
-            name: nome,
-            priority: prioridade,
-            completed: false
-        };
-    
+document.getElementById("task-form").addEventListener("submit", function(event) {
+  event.preventDefault();
 
-    tasksRef.push(newTask);
-
-    document.getElementById("task-name").value = "";
-  });
-
+  const nome = document.getElementById("task-name").value;
+  const prioridade = document.getElementById("priority").value;
   
-  tasksRef.on('value', (snapshot) => {
+  const newTask = {
+    name: nome,
+    priority: prioridade,
+    completed: false
+  };
+
+  tasksRef.push(newTask);
+  document.getElementById("task-name").value = "";
+});
+
+tasksRef.on('value', (snapshot) => {
+  document.getElementById("task-list").innerHTML = '';
+
+  snapshot.forEach(task => {
+    const taskData = task.val();
     
-    document.getElementById("task-list").innerHTML = '';
+    const taskItem = document.createElement("li");
+    taskItem.classList.add(taskData.priority);
 
-    snapshot.forEach(task => {
-      const taskData = task.val();
+    // Criar bolinha de prioridade
+    const priorityBubble = document.createElement("span");
+    priorityBubble.classList.add("priority-bubble");
 
+    if (taskData.priority === "Alta") {
+      priorityBubble.classList.add("priority-high");
+    } else if (taskData.priority === "Media") {
+      priorityBubble.classList.add("priority-medium");
+    } else if (taskData.priority === "Baixa") {
+      priorityBubble.classList.add("priority-low");
+    }
 
-      const taskItem = document.createElement("li");
-      taskItem.classList.add(taskData.priority);
-      taskItem.innerHTML = `
-        <span class="task-name">${taskData.name}</span>
-        <div>
-          <button class="edit" data-task-id="${task.key}">Editar</button>
-          <button class="delete"  data-task-id="${task.key}">Deletar</button>
-          <button class="confirm" data-task-id="${task.key}">Confirmar</button>
-        </div>
-      `;
-
-      
-      taskItem.querySelector(".delete").addEventListener("click", function() {
-        confirmacao.style.display = 'block';
+    taskItem.innerHTML = `
+      <span class="task-name">${taskData.name}</span>
+      <div>
+        <button class="edit" data-task-id="${task.key}">Editar</button>
+        <button class="delete" data-task-id="${task.key}">Deletar</button>
+        <button class="confirm" data-task-id="${task.key}">Confirmar</button>
+      </div>
+    `;
     
-        botaoNao.addEventListener('click', () => {
+    taskItem.querySelector(".task-name").appendChild(priorityBubble);
+
+    // Verifica se a tarefa está concluída
+    if (taskData.completed) {
+      // Marca a tarefa como concluída visualmente
+      taskItem.querySelector(".task-name").style.textDecoration = "line-through";
+      taskItem.querySelector(".confirm").style.display = "none";  // Esconde o botão de confirmar
+      taskItem.querySelector(".edit").style.display = "none";     // Esconde o botão de editar
+      taskItem.querySelector(".confirm").disabled = true;         // Desabilita o botão de confirmar
+      taskItem.querySelector(".edit").disabled = true;            // Desabilita o botão de editar
+    }
+
+    // Deletar tarefa
+    taskItem.querySelector(".delete").addEventListener("click", function() {
+      confirmacao.style.display = 'block';
+
+      botaoNao.addEventListener('click', () => {
         confirmacao.style.display = 'none';
-        });
-
-        botaoSim.addEventListener('click', () => {
-            tasksRef.child(this.dataset.taskId).remove();
-            confirmacao.style.display = 'none';
-        });
-    
-    
-      });
-       
-
-      taskItem.querySelector(".edit").addEventListener("click", function() {
-
-        const nomeatual = taskItem.querySelector(".task-name").textContent;
-
-
-        const newName = prompt("Edit Task", nomeatual);
-
-        
-        if (newName) {
-          tasksRef.child(this.dataset.taskId).update({
-            name: newName
-          });
-        }
       });
 
-      taskItem.querySelector(".confirm").addEventListener("click", function() {
-        
-        tasksRef.child(this.dataset.taskId).update({
-          completed: true
-        });
-
-        taskItem.querySelector(".task-name").style.textDecoration = "line-through";
-        taskItem.querySelector(".confirm").style.display = "none"
-        taskItem.querySelector(".edit").style.display = "none"
-        
-        taskItem.querySelector(".confirm").disabled = true;
-        taskItem.querySelector(".edit").disabled = true;
+      botaoSim.addEventListener('click', () => {
+        tasksRef.child(this.dataset.taskId).remove();
+        confirmacao.style.display = 'none';
       });
-
-      
-      document.getElementById("task-list").appendChild(taskItem);
     });
+
+    // Editar tarefa
+    taskItem.querySelector(".edit").addEventListener("click", function() {
+      const nomeatual = taskItem.querySelector(".task-name").textContent;
+      const newName = prompt("Edit Task", nomeatual);
+
+      if (newName) {
+        tasksRef.child(this.dataset.taskId).update({
+          name: newName
+        });
+      }
+    });
+
+    // Confirmar tarefa
+    taskItem.querySelector(".confirm").addEventListener("click", function() {
+      tasksRef.child(this.dataset.taskId).update({
+        completed: true
+      });
+
+      taskItem.querySelector(".task-name").style.textDecoration = "line-through";
+      taskItem.querySelector(".confirm").style.display = "none";
+      taskItem.querySelector(".edit").style.display = "none";
+      taskItem.querySelector(".confirm").disabled = true;
+      taskItem.querySelector(".edit").disabled = true;
+    });
+
+    document.getElementById("task-list").appendChild(taskItem);
   });
+});
 </script>
