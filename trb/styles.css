@@ -1,0 +1,44 @@
+body {
+    background-color: #121212; /* Preto escuro */
+    color: #fff; /* Branco para contraste */
+  }
+  
+  h1 {
+    color: #800080; /* Roxo escuro */
+  }
+  
+  button {
+    background-color: #333; /* Cinza escuro */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .edit, .delete, .confirm{
+    /* Estilos básicos dos botões */
+    padding: 10px 20px;
+    background-color: #170c31; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; /* Animação de transição */
+  }
+  
+  .edit:hover, .delete:hover, .confirm:hover{
+    transform: scale(1.1); /* Aumenta o tamanho em 10% */
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra */
+  }
+
+  #confirmacao {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #4f287c;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }

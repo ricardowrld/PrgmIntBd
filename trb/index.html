@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Navbar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    
+    <header>
+        <nav class="navbar">
+            <div class="navbar-logo"></div>
+            <ul class="navbar-links">
+                <li><a href="#home">Inicio</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main style="position: fixed; ">
+        <section id="home">
+            <h2>Minha to do list</h2>
+            <form id="task-form">
+                <input type="text" id="task-name" placeholder="Insira a tarefa" required>
+                <select id="priority">
+                    <option value="Alta">Alto</option>
+                    <option value="Media">Médio</option>
+                    <option value="Baixa">Baixo</option>
+                </select>
+                <button type="submit" >Adicionar a Lista</button>
+                <div id="confirmacao" style="display: none;">
+                    <p>Tem certeza que deseja excluir esta tarefa?</p>
+                    <button id="sim">Sim</button>
+                    <button id="nao">Não</button>
+                  </div>
+            </form>
+            <ul id="task-list"></ul>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<script>
+  const confirmacao = document.getElementById('confirmacao');
+  const botaoSim = document.getElementById('sim');
+  const botaoNao = document.getElementById('nao');
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDrmYSg7TDP3KstU_uI_OgHM80EC-2PEDU",
+  authDomain: "todolistbd-a241a.firebaseapp.com",
+  databaseURL: "https://todolistbd-a241a-default-rtdb.firebaseio.com",
+  projectId: "todolistbd-a241a",
+  storageBucket: "todolistbd-a241a.firebasestorage.app",
+  messagingSenderId: "164730767493",
+  appId: "1:164730767493:web:aabd732a3d7d6cd5e701ec",
+  measurementId: "G-6VM0EP62RC"
+};
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+  const tasksRef = database.ref('tasks');
+
+  document.getElementById("task-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("task-name").value;
+    const prioridade = document.getElementById("priority").value;
+    const newTask = {
+            name: nome,
+            priority: prioridade,
+            completed: false
+        };
+    
+
+    tasksRef.push(newTask);
+
+    document.getElementById("task-name").value = "";
+  });
+
+  
+  tasksRef.on('value', (snapshot) => {
+    
+    document.getElementById("task-list").innerHTML = '';
+
+    snapshot.forEach(task => {
+      const taskData = task.val();
+
+
+      const taskItem = document.createElement("li");
+      taskItem.classList.add(taskData.priority);
+      taskItem.innerHTML = `
+        <span class="task-name">${taskData.name}</span>
+        <div>
+          <button class="edit" data-task-id="${task.key}">Editar</button>
+          <button class="delete"  data-task-id="${task.key}">Deletar</button>
+          <button class="confirm" data-task-id="${task.key}">Confirmar</button>
+        </div>
+      `;
+
+      
+      taskItem.querySelector(".delete").addEventListener("click", function() {
+        confirmacao.style.display = 'block';
+    
+        botaoNao.addEventListener('click', () => {
+        confirmacao.style.display = 'none';
+        });
+
+        botaoSim.addEventListener('click', () => {
+            tasksRef.child(this.dataset.taskId).remove();
+            confirmacao.style.display = 'none';
+        });
+    
+    
+      });
+       
+
+      taskItem.querySelector(".edit").addEventListener("click", function() {
+
+        const nomeatual = taskItem.querySelector(".task-name").textContent;
+
+
+        const newName = prompt("Edit Task", nomeatual);
+
+        
+        if (newName) {
+          tasksRef.child(this.dataset.taskId).update({
+            name: newName
+          });
+        }
+      });
+
+      taskItem.querySelector(".confirm").addEventListener("click", function() {
+        
+        tasksRef.child(this.dataset.taskId).update({
+          completed: true
+        });
+
+        taskItem.querySelector(".task-name").style.textDecoration = "line-through";
+        taskItem.querySelector(".confirm").style.display = "none"
+        taskItem.querySelector(".edit").style.display = "none"
+        
+        taskItem.querySelector(".confirm").disabled = true;
+        taskItem.querySelector(".edit").disabled = true;
+      });
+
+      
+      document.getElementById("task-list").appendChild(taskItem);
+    });
+  });
+</script>
